@@ -1,0 +1,6 @@
+namespace bab
+{
+
+void entry();
+
+}
