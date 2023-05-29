@@ -4,6 +4,7 @@ add_library(bab STATIC
     graphics_manager.cpp
     manual_object.cpp
     physics_manager.cpp
+    scene_manager.cpp
 )
 
 add_library(bab::bab ALIAS bab)
