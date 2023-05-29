@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "rigid_body.h"
 #include "vector3.h"
 
 #include "BulletCollision/BroadphaseCollision/btDbvtBroadphase.h"
@@ -59,8 +60,11 @@ class PhysicsManager
      *
      * @param mass
      *   The mass of the rigid body.
+     *
+     * @returns
+     *   Wrapper for the internal bullet rigid body.
      */
-    void add_dynamic_rigid_body(const Vector3 &half_extent, const Vector3 &position, float mass);
+    RigidBody add_dynamic_rigid_body(const Vector3 &half_extent, const Vector3 &position, float mass);
 
     /**
      * Set the DebugDraer object, until this is called no debug information will be rendered.

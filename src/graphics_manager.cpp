@@ -1,13 +1,13 @@
 #include "graphics_manager.h"
 
 #include <functional>
-#include <memory>
 #include <string>
 
 #include "colour.h"
 #include "degree.h"
 #include "manual_object.h"
 #include "quaternion.h"
+#include "render_entity.h"
 #include "vector3.h"
 
 #include "Ogre.h"
@@ -114,7 +114,7 @@ void GraphicsManager::add_material(const std::string &name, const std::string &t
     tex_unit->setTextureName(texture->getName());
 }
 
-void GraphicsManager::add_cube(const Vector3 &position, float scale, const std::string &material_name)
+RenderEntity GraphicsManager::add_cube(const Vector3 &position, float scale, const std::string &material_name)
 {
     auto *entity = scene_manager_->createEntity("cube.mesh");
     entity->setMaterialName(material_name);
@@ -123,6 +123,8 @@ void GraphicsManager::add_cube(const Vector3 &position, float scale, const std::
     node->attachObject(entity);
     node->setScale(scale, scale, scale);
     node->setPosition(position);
+
+    return {node};
 }
 
 ManualObject GraphicsManager::add_manual_object()

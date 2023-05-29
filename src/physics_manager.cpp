@@ -1,6 +1,7 @@
 #include "physics_manager.h"
 
 #include "debug_drawer.h"
+#include "rigid_body.h"
 #include "vector3.h"
 
 #include "BulletCollision/BroadphaseCollision/btDbvtBroadphase.h"
@@ -79,7 +80,7 @@ void PhysicsManager::add_static_rigid_body(const Vector3 &half_extent, const Vec
     world_.addRigidBody(rigid_body);
 }
 
-void PhysicsManager::add_dynamic_rigid_body(const Vector3 &half_extent, const Vector3 &position, float mass)
+RigidBody PhysicsManager::add_dynamic_rigid_body(const Vector3 &half_extent, const Vector3 &position, float mass)
 {
     ::btTransform start_transform{};
     start_transform.setIdentity();
@@ -101,6 +102,8 @@ void PhysicsManager::add_dynamic_rigid_body(const Vector3 &half_extent, const Ve
 
     rigid_body->setFriction(1.0f);
     world_.addRigidBody(rigid_body);
+
+    return {rigid_body};
 }
 
 void PhysicsManager::set_debug_drawer(DebugDrawer *debug_drawer)

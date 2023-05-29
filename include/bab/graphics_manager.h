@@ -8,6 +8,7 @@
 #include "degree.h"
 #include "manual_object.h"
 #include "quaternion.h"
+#include "render_entity.h"
 #include "vector3.h"
 
 #include "Ogre.h"
@@ -104,8 +105,11 @@ class GraphicsManager : private ::OgreBites::ApplicationContext, ::OgreBites::In
      *
      * @param material_name
      *   The name of the material to add.
+     *
+     * @returns
+     *   Pointer to newly added entity.
      */
-    void add_cube(const Vector3 &position, float scale, const std::string &material_name);
+    RenderEntity add_cube(const Vector3 &position, float scale, const std::string &material_name);
 
     /**
      * Add a new manual object to the scene.
