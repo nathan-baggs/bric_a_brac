@@ -1,6 +1,7 @@
 #include "entry.h"
 
 #include <functional>
+#include <iostream>
 #include <numbers>
 
 #include "colour.h"
@@ -36,7 +37,10 @@ int main()
 
     bab::SceneManager sm{gm, pm};
 
-    sm.add_cube({10.0f, 200.0f, 10.0f}, 0.5f, "box_material", 10.0f);
+    sm.add_cube({10.0f, 200.0f, 10.0f}, 0.5f, "box_material", 10.0f, [] {
+        std::cout << "HIT\n";
+        return true;
+    });
 
     gm.start_rendering();
 
