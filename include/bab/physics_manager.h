@@ -1,8 +1,11 @@
 #pragma once
 
+#include <functional>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
+#include "collision_callback.h"
 #include "rigid_body.h"
 #include "vector3.h"
 
@@ -67,6 +70,18 @@ class PhysicsManager
     RigidBody add_dynamic_rigid_body(const Vector3 &half_extent, const Vector3 &position, float mass);
 
     /**
+     * Register a new collision callback.
+     *
+     * @param rigid_body.
+     *   The rigid body to test for collisions to fire the callback.
+     *
+     * @param callback
+     *   The callback to fire when the rigid body has a collision, the callback should return true if it is to be
+     *   consumed and not fired again, or false if it should be fired on further collisions.
+     */
+    void register_collision_callback(const RigidBody &rigid_body, std::function<bool()> callback);
+
+    /**
      * Set the DebugDraer object, until this is called no debug information will be rendered.
      *
      * @param debug_drawer
@@ -109,6 +124,9 @@ class PhysicsManager
 
     /** Optional object for handling debug information. */
     DebugDrawer *debug_drawer_;
+
+    /** Map of rigid bodies to their registered collision callbacks. */
+    std::unordered_map<::btRigidBody *, std::function<bool()>> collision_callbacks_;
 };
 
 }

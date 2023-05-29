@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -48,8 +49,16 @@ class SceneManager
      *
      * @param mass
      *   The mass of the rigid body.
+     *
+     * @param callback
+     *   Optional callback to fire when the physics component collides.
      */
-    void add_cube(const Vector3 &position, float scale, const std::string &material_name, float mass);
+    void add_cube(
+        const Vector3 &position,
+        float scale,
+        const std::string &material_name,
+        float mass,
+        std::function<bool()> callback = nullptr);
 
   private:
     /** The GraphicsManager for the engine. */

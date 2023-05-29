@@ -1,5 +1,9 @@
 #include "physics_manager.h"
 
+#include <functional>
+#include <unordered_map>
+#include <vector>
+
 #include "debug_drawer.h"
 #include "rigid_body.h"
 #include "vector3.h"
@@ -46,6 +50,7 @@ PhysicsManager::PhysicsManager()
     , motion_states_()
     , rigid_bodies_()
     , debug_drawer_(nullptr)
+    , collision_callbacks_()
 {
     broadphase_.getOverlappingPairCache()->setInternalGhostPairCallback(&ghost_pair_callback_);
     world_.setGravity({-0.0f, -10.0f, 0.0f});
@@ -106,6 +111,12 @@ RigidBody PhysicsManager::add_dynamic_rigid_body(const Vector3 &half_extent, con
     return {rigid_body};
 }
 
+void PhysicsManager::register_collision_callback(const RigidBody &rigid_body, std::function<bool()> callback)
+{
+    auto *bullet_rigid_body = rigid_body.rigid_body_;
+    collision_callbacks_.try_emplace(bullet_rigid_body, std::move(callback));
+}
+
 void PhysicsManager::set_debug_drawer(DebugDrawer *debug_drawer)
 {
     debug_drawer_ = debug_drawer;
@@ -115,6 +126,25 @@ void PhysicsManager::set_debug_drawer(DebugDrawer *debug_drawer)
 void PhysicsManager::update()
 {
     world_.stepSimulation(0.16f);
+
+    // test for collisions on all rigid bodies with a registered callback
+    for (auto &[rigid_body, callback] : collision_callbacks_)
+    {
+        CollisionCallback collision_check{};
+        world_.contactTest(rigid_body, collision_check);
+
+        if (collision_check)
+        {
+            // if the callback returns true then we can clear it
+            if (callback())
+            {
+                collision_callbacks_[rigid_body] = nullptr;
+            }
+        }
+    }
+
+    // remove all entries with cleared callbacks
+    std::erase_if(collision_callbacks_, [](const auto &element) { return !std::get<1>(element); });
 
     if (debug_drawer_ != nullptr)
     {

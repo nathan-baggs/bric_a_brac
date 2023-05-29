@@ -1,5 +1,6 @@
 #include "scene_manager.h"
 
+#include <functional>
 #include <string>
 
 #include "graphics_manager.h"
@@ -34,13 +35,23 @@ SceneManager::SceneManager(GraphicsManager &gm, PhysicsManager &pm)
     });
 }
 
-void SceneManager::add_cube(const Vector3 &position, float scale, const std::string &material_name, float mass)
+void SceneManager::add_cube(
+    const Vector3 &position,
+    float scale,
+    const std::string &material_name,
+    float mass,
+    std::function<bool()> callback)
 {
     const auto bullet_ogre_scale_factor = 50.0f;
 
-    entities_.emplace_back(
+    const auto &[_, rigid_body] = entities_.emplace_back(
         gm_.add_cube(position, scale, "box_material"),
         pm_.add_dynamic_rigid_body(Vector3{scale, scale, scale} * bullet_ogre_scale_factor, position, mass));
+
+    if (callback)
+    {
+        pm_.register_collision_callback(rigid_body, callback);
+    }
 }
 
 }
