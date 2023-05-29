@@ -1,6 +1,7 @@
 add_library(bab STATIC
     entry.cpp
     graphics_manager.cpp
+    manual_object.cpp
     physics_manager.cpp
 )
 
