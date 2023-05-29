@@ -40,26 +40,6 @@ GraphicsManager::GraphicsManager()
     vp->setBackgroundColour(::Ogre::ColourValue{0.0, 0.0, 0.0});
     camera->setAspectRatio(::Ogre::Real(vp->getActualWidth()) / ::Ogre::Real(vp->getActualHeight()));
 
-    // load ninja model and ensure it casts shadows
-    auto *ninja_entity = scene_manager_->createEntity("ninja.mesh");
-    ninja_entity->setCastShadows(true);
-
-    // create a scene node for the ninja
-    auto *ninja_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
-    ninja_node->attachObject(ninja_entity);
-    ninja_node->setOrientation(::Ogre::Quaternion{::Ogre::Radian{::Ogre::Math::PI}, ::Ogre::Vector3{0.0, 1.0, 0.0}});
-
-    // create a plane for the ground
-    ::Ogre::Plane plane{::Ogre::Vector3::UNIT_Y, 0.0};
-    ::Ogre::MeshManager::getSingleton().createPlane(
-        "ground", ::Ogre::RGN_DEFAULT, plane, 1500.0, 1500.0, 20, 20, true, 1, 5, 5.0, ::Ogre::Vector3::UNIT_Z);
-
-    // create an entity for the ground
-    auto *ground_entity = scene_manager_->createEntity("ground");
-    scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(ground_entity);
-    ground_entity->setCastShadows(false);
-    ground_entity->setMaterialName("Examples/Rockwall");
-
     // create some lights
 
     auto *spot_light = scene_manager_->createLight("spot_light");
@@ -91,26 +71,80 @@ GraphicsManager::GraphicsManager()
     point_light_node->attachObject(point_light);
     point_light_node->setPosition(::Ogre::Vector3(0, 150, 250));
 
-    // add a box
-
-    const auto material = ::Ogre::MaterialManager::getSingleton().create("MyMaterial", "bab");
-    const auto texture = ::Ogre::TextureManager::getSingleton().load("box.png", "bab");
-    auto *pass = material->getTechnique(0)->getPass(0);
-    auto *tex_unit = pass->createTextureUnitState();
-    tex_unit->setTextureName(texture->getName());
-
-    auto *box_entity = scene_manager_->createEntity("cube.mesh");
-    box_entity->setMaterial(material);
-    auto *box_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
-    box_node->attachObject(box_entity);
-    box_node->setScale(0.2f, 0.2f, 0.2f);
-
     addInputListener(this);
 }
 
 GraphicsManager::~GraphicsManager()
 {
     closeApp();
+}
+
+void GraphicsManager::add_mesh(
+    const std::string &mesh_name,
+    const Vector3 &position,
+    const Quaternion &orientation,
+    bool casts_shadows)
+{
+    auto *entity = scene_manager_->createEntity(mesh_name);
+    entity->setCastShadows(casts_shadows);
+
+    auto *node = scene_manager_->getRootSceneNode()->createChildSceneNode();
+    node->attachObject(entity);
+    node->setPosition(position);
+    node->setOrientation(orientation);
+}
+
+void GraphicsManager::add_plane(
+    float width,
+    float height,
+    std::uint32_t x_segments,
+    std::uint32_t z_segments,
+    bool casts_shadows,
+    const std::string &material_name)
+{
+    static auto plane_counter = 0u;
+    std::string name = "plane" + std::to_string(plane_counter++);
+
+    ::Ogre::Plane plane{::Ogre::Vector3::UNIT_Y, 0.0};
+    ::Ogre::MeshManager::getSingleton().createPlane(
+        name,
+        ::Ogre::RGN_DEFAULT,
+        plane,
+        width,
+        height,
+        static_cast<int>(x_segments),
+        static_cast<int>(z_segments),
+        true,
+        1,
+        5,
+        5.0,
+        ::Ogre::Vector3::UNIT_Z);
+
+    auto *entity = scene_manager_->createEntity(name);
+    entity->setCastShadows(casts_shadows);
+    entity->setMaterialName(material_name);
+
+    scene_manager_->getRootSceneNode()->createChildSceneNode()->attachObject(entity);
+}
+
+void GraphicsManager::add_material(const std::string &name, const std::string &texture_name)
+{
+    const auto material = ::Ogre::MaterialManager::getSingleton().create(name, "bab");
+    const auto texture = ::Ogre::TextureManager::getSingleton().load(texture_name, "bab");
+    auto *pass = material->getTechnique(0)->getPass(0);
+    auto *tex_unit = pass->createTextureUnitState();
+    tex_unit->setTextureName(texture->getName());
+}
+
+void GraphicsManager::add_cube(const Vector3 &position, float scale, const std::string &material_name)
+{
+    auto *entity = scene_manager_->createEntity("cube.mesh");
+    entity->setMaterialName(material_name);
+
+    auto *node = scene_manager_->getRootSceneNode()->createChildSceneNode();
+    node->attachObject(entity);
+    node->setScale(scale, scale, scale);
+    node->setPosition(position);
 }
 
 void GraphicsManager::start_rendering()
