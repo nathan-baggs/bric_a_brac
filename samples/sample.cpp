@@ -1,10 +1,12 @@
 #include "entry.h"
 
+#include <functional>
 #include <numbers>
 
 #include "colour.h"
 #include "degree.h"
 #include "graphics_manager.h"
+#include "physics_manager.h"
 #include "quaternion.h"
 #include "radian.h"
 #include "vector3.h"
@@ -25,6 +27,13 @@ int main()
         {200.0f, 200.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, bab::Colour::Blue, bab::Degree{35.0f}, bab::Degree{50.0f});
     gm.add_directional_light({0.0f, -1.0f, 1.0f}, bab::Colour{0.4f, 0.0f, 0.0f});
     gm.add_point_light({0.0f, 150.0f, 250.0f}, bab::Colour::White * 0.3f);
+
+    bab::PhysicsManager pm{};
+
+    pm.add_static_rigid_body({750.0f, 0.0f, 750.0f}, bab::Vector3::ZERO);
+    pm.add_dynamic_rigid_body({10.0f, 10.0f, 10.0f}, bab::Vector3::ZERO, 10.0f);
+
+    gm.register_frame_start_callback([&pm] { pm.update(); });
 
     gm.start_rendering();
 
