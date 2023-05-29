@@ -1,5 +1,6 @@
 #include "physics_manager.h"
 
+#include "debug_drawer.h"
 #include "vector3.h"
 
 #include "BulletCollision/BroadphaseCollision/btDbvtBroadphase.h"
@@ -43,6 +44,7 @@ PhysicsManager::PhysicsManager()
     , shapes_()
     , motion_states_()
     , rigid_bodies_()
+    , debug_drawer_(nullptr)
 {
     broadphase_.getOverlappingPairCache()->setInternalGhostPairCallback(&ghost_pair_callback_);
     world_.setGravity({-0.0f, -10.0f, 0.0f});
@@ -101,9 +103,20 @@ void PhysicsManager::add_dynamic_rigid_body(const Vector3 &half_extent, const Ve
     world_.addRigidBody(rigid_body);
 }
 
+void PhysicsManager::set_debug_drawer(DebugDrawer *debug_drawer)
+{
+    debug_drawer_ = debug_drawer;
+    world_.setDebugDrawer(debug_drawer);
+}
+
 void PhysicsManager::update()
 {
     world_.stepSimulation(0.16f);
+
+    if (debug_drawer_ != nullptr)
+    {
+        world_.debugDrawWorld();
+    }
 }
 
 }

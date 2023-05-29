@@ -14,9 +14,12 @@
 #include "BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 #include "LinearMath/btDefaultMotionState.h"
+#include "LinearMath/btIDebugDraw.h"
 
 namespace bab
 {
+
+class DebugDrawer;
 
 /**
  * Class to handle all things related to physics.
@@ -60,6 +63,14 @@ class PhysicsManager
     void add_dynamic_rigid_body(const Vector3 &half_extent, const Vector3 &position, float mass);
 
     /**
+     * Set the DebugDraer object, until this is called no debug information will be rendered.
+     *
+     * @param debug_drawer
+     *   The object for handling debug information.
+     */
+    void set_debug_drawer(DebugDrawer *debug_drawer);
+
+    /**
      * Advance the physics simulation, should be called every frame.
      */
     void update();
@@ -91,6 +102,9 @@ class PhysicsManager
 
     /** Collection of created rigid bodies. */
     std::vector<std::unique_ptr<::btRigidBody>> rigid_bodies_;
+
+    /** Optional object for handling debug information. */
+    DebugDrawer *debug_drawer_;
 };
 
 }
