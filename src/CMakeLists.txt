@@ -1,4 +1,5 @@
 add_library(bab STATIC
+    debug_drawer.cpp
     entry.cpp
     graphics_manager.cpp
     manual_object.cpp
