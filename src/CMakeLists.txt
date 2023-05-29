@@ -4,6 +4,7 @@ add_library(bab STATIC
     graphics_manager.cpp
     manual_object.cpp
     physics_manager.cpp
+    render_entity.cpp
     scene_manager.cpp
 )
 
