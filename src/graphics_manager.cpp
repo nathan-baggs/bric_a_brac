@@ -1,5 +1,13 @@
 #include "graphics_manager.h"
 
+#include <functional>
+#include <string>
+
+#include "colour.h"
+#include "degree.h"
+#include "quaternion.h"
+#include "vector3.h"
+
 #include "Ogre.h"
 #include "OgreApplicationContext.h"
 
@@ -8,6 +16,8 @@ namespace bab
 
 GraphicsManager::GraphicsManager()
     : scene_manager_(nullptr)
+    , frame_start_callbacks_()
+    , frame_end_callbacks_()
 {
     initApp();
     scene_manager_ = getRoot()->createSceneManager();
@@ -170,6 +180,16 @@ void GraphicsManager::set_sky_dome(const std::string &material_name, float curva
     scene_manager_->setSkyDome(true, material_name, curvature, tiling);
 }
 
+void GraphicsManager::register_frame_start_callback(std::function<void()> callback)
+{
+    frame_start_callbacks_.push_back(std::move(callback));
+}
+
+void GraphicsManager::register_frame_end_callback(std::function<void()> callback)
+{
+    frame_end_callbacks_.push_back(std::move(callback));
+}
+
 void GraphicsManager::start_rendering()
 {
     getRoot()->startRendering();
@@ -177,11 +197,21 @@ void GraphicsManager::start_rendering()
 
 bool GraphicsManager::frameStarted(const ::Ogre::FrameEvent &evt)
 {
+    for (const auto &callback : frame_start_callbacks_)
+    {
+        callback();
+    }
+
     return ::OgreBites::ApplicationContext::frameStarted(evt);
 }
 
 bool GraphicsManager::frameEnded(const ::Ogre::FrameEvent &evt)
 {
+    for (const auto &callback : frame_end_callbacks_)
+    {
+        callback();
+    }
+
     return ::OgreBites::ApplicationContext::frameEnded(evt);
 }
 

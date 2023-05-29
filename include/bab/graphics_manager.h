@@ -1,9 +1,12 @@
 #pragma once
 
+#include <functional>
 #include <string>
+#include <vector>
 
 #include "colour.h"
 #include "degree.h"
+#include "manual_object.h"
 #include "quaternion.h"
 #include "vector3.h"
 
@@ -166,6 +169,22 @@ class GraphicsManager : private ::OgreBites::ApplicationContext, ::OgreBites::In
     void set_sky_dome(const std::string &material_name, float curvature, float tiling);
 
     /**
+     * Register a callback, which will get fired on frame start.
+     *
+     * @param callback
+     *   The callback to register.
+     */
+    void register_frame_start_callback(std::function<void()> callback);
+
+    /**
+     * Register a callback, which will get fired on frame end.
+     *
+     * @param callback
+     *   The callback to register.
+     */
+    void register_frame_end_callback(std::function<void()> callback);
+
+    /**
      * Block and start the render loop.
      */
     void start_rendering();
@@ -206,6 +225,12 @@ class GraphicsManager : private ::OgreBites::ApplicationContext, ::OgreBites::In
 
     /** Ogre scene manager object. */
     ::Ogre::SceneManager *scene_manager_;
+
+    /** Collection of callbacks to fire on frame start. */
+    std::vector<std::function<void()>> frame_start_callbacks_;
+
+    /** Collection of callbacks to fire on frame end. */
+    std::vector<std::function<void()>> frame_end_callbacks_;
 };
 
 }
