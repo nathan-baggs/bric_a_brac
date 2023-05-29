@@ -2,6 +2,8 @@
 
 #include <numbers>
 
+#include "colour.h"
+#include "degree.h"
 #include "graphics_manager.h"
 #include "quaternion.h"
 #include "radian.h"
@@ -16,6 +18,11 @@ int main()
 
     gm.add_material("box_material", "box.png");
     gm.add_cube(bab::Vector3::ZERO, 0.2f, "box_material");
+
+    gm.add_spot_light(
+        {200.0f, 200.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, bab::Colour::Blue, bab::Degree{35.0f}, bab::Degree{50.0f});
+    gm.add_directional_light({0.0f, -1.0f, 1.0f}, bab::Colour{0.4f, 0.0f, 0.0f});
+    gm.add_point_light({0.0f, 150.0f, 250.0f}, bab::Colour::White * 0.3f);
 
     gm.start_rendering();
 
