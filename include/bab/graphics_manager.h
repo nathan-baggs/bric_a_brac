@@ -108,6 +108,14 @@ class GraphicsManager : private ::OgreBites::ApplicationContext, ::OgreBites::In
     void add_cube(const Vector3 &position, float scale, const std::string &material_name);
 
     /**
+     * Add a new manual object to the scene.
+     *
+     * @returns
+     *   The newly added manual object.
+     */
+    ManualObject add_manual_object();
+
+    /**
      * Add a new spotlight to the scene.
      *
      * @param position

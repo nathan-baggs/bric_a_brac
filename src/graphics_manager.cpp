@@ -1,10 +1,12 @@
 #include "graphics_manager.h"
 
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "colour.h"
 #include "degree.h"
+#include "manual_object.h"
 #include "quaternion.h"
 #include "vector3.h"
 
@@ -121,6 +123,35 @@ void GraphicsManager::add_cube(const Vector3 &position, float scale, const std::
     node->attachObject(entity);
     node->setScale(scale, scale, scale);
     node->setPosition(position);
+}
+
+ManualObject GraphicsManager::add_manual_object()
+{
+    static auto counter = 0u;
+    std::string name = "manual_object" + std::to_string(counter++);
+
+    auto object = std::make_unique<::Ogre::ManualObject>(name);
+
+    // tell ogre we will be updating the geometry of the object regularly
+    object->setDynamic(true);
+
+    // attach the manual object to the scene
+    scene_manager_->getRootSceneNode()->attachObject(object.get());
+
+    // setup a basic material which doesn't cast shadows and isn't effected by lights
+    auto mtl = ::Ogre::MaterialManager::getSingleton().getDefaultSettings()->clone("debug_line_material");
+    mtl->setReceiveShadows(false);
+    mtl->setSceneBlending(::Ogre::SBT_TRANSPARENT_ALPHA);
+    mtl->setDepthBias(0.1, 0);
+
+    auto *tu = mtl->getTechnique(0)->getPass(0)->createTextureUnitState();
+    tu->setColourOperationEx(::Ogre::LBX_SOURCE1, ::Ogre::LBS_DIFFUSE);
+    mtl->getTechnique(0)->setLightingEnabled(false);
+
+    // tell ogre we will now start defining geometry
+    object->begin(mtl->getName(), ::Ogre::RenderOperation::OT_LINE_LIST);
+
+    return {std::move(object)};
 }
 
 void GraphicsManager::add_spot_light(
