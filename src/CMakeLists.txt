@@ -1,6 +1,6 @@
 add_library(bab STATIC
+    collision_callback.cpp
     debug_drawer.cpp
-    entry.cpp
     graphics_manager.cpp
     manual_object.cpp
     physics_manager.cpp
