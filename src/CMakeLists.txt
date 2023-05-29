@@ -1,6 +1,7 @@
 add_library(bab STATIC
     entry.cpp
     graphics_manager.cpp
+    physics_manager.cpp
 )
 
 add_library(bab::bab ALIAS bab)
