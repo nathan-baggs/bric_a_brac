@@ -1,4 +1,5 @@
 add_library(bab STATIC
+    audio_clip.cpp
     collision_callback.cpp
     debug_drawer.cpp
     graphics_manager.cpp
