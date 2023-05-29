@@ -22,7 +22,6 @@ int main()
     gm.add_plane(1500.0f, 1500.0f, 20u, 20u, false, "Examples/Rockwall");
 
     gm.add_material("box_material", "box.png");
-    gm.add_cube(bab::Vector3::ZERO, 0.2f, "box_material");
 
     gm.add_spot_light(
         {200.0f, 200.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, bab::Colour::Blue, bab::Degree{35.0f}, bab::Degree{50.0f});
@@ -32,11 +31,12 @@ int main()
     bab::PhysicsManager pm{};
 
     pm.add_static_rigid_body({750.0f, 0.0f, 750.0f}, bab::Vector3::ZERO);
-    pm.add_dynamic_rigid_body({10.0f, 10.0f, 10.0f}, {10.0f, 100.0f, 10.0f}, 10.0f);
 
     gm.register_frame_start_callback([&pm] { pm.update(); });
 
     bab::SceneManager sm{gm, pm};
+
+    sm.add_cube({10.0f, 200.0f, 10.0f}, 0.5f, "box_material", 10.0f);
 
     gm.start_rendering();
 
