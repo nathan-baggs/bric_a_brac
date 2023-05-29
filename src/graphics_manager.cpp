@@ -19,9 +19,6 @@ GraphicsManager::GraphicsManager()
     ::Ogre::ResourceGroupManager::getSingleton().addResourceLocation("./assets", "FileSystem", "bab");
     ::Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("bab");
 
-    // simple skydome setup using the builtin ogre assets
-    scene_manager_->setSkyDome(true, "Examples/CloudySky", 5.0, 8.0);
-
     // set scene properties
     scene_manager_->setAmbientLight(::Ogre::ColourValue{0.2, 0.2, 0.2});
     scene_manager_->setShadowTechnique(::Ogre::ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
@@ -166,6 +163,11 @@ void GraphicsManager::add_point_light(const Vector3 &position, const Colour &col
     auto *node = scene_manager_->getRootSceneNode()->createChildSceneNode();
     node->attachObject(point_light);
     node->setPosition(position);
+}
+
+void GraphicsManager::set_sky_dome(const std::string &material_name, float curvature, float tiling)
+{
+    scene_manager_->setSkyDome(true, material_name, curvature, tiling);
 }
 
 void GraphicsManager::start_rendering()

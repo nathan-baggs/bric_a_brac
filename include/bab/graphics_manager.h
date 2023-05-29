@@ -152,6 +152,20 @@ class GraphicsManager : private ::OgreBites::ApplicationContext, ::OgreBites::In
     void add_point_light(const Vector3 &position, const Colour &colour);
 
     /**
+     * Set the sky dome for the scene.
+     *
+     * @param material_name
+     *   The name of the material to add to the dome.
+     *
+     * @param curvature
+     *   The curvature of the dome.
+     *
+     * @param tiling
+     *   How many times to tile the texture.
+     */
+    void set_sky_dome(const std::string &material_name, float curvature, float tiling);
+
+    /**
      * Block and start the render loop.
      */
     void start_rendering();
