@@ -1,10 +1,13 @@
 #include "entry.h"
 
+#include <cassert>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
 #include "BulletCollision/CollisionDispatch/btCollisionObject.h"
+#include "BulletCollision/CollisionDispatch/btCollisionWorld.h"
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
 #include "BulletDynamics/Dynamics/btRigidBody.h"
@@ -16,6 +19,7 @@
 #include "LinearMath/btVector3.h"
 #include "Ogre.h"
 #include "OgreApplicationContext.h"
+#include "SDL.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 
@@ -43,6 +47,47 @@ class KeyHandler : public ::OgreBites::InputListener
 
         return true;
     }
+};
+
+/**
+ * Class for registering bullet collisions.
+ */
+class CollisionCallback : public ::btCollisionWorld::ContactResultCallback
+{
+  public:
+    /**
+     * Callback to register a collision.
+
+     * @returns
+     *   Unused by bullet, we always return 0.
+     */
+    btScalar addSingleResult(
+        btManifoldPoint &,
+        const btCollisionObjectWrapper *,
+        int,
+        int,
+        const btCollisionObjectWrapper *,
+        int,
+        int) override
+    {
+        has_collided_ = true;
+        return 0;
+    }
+
+    /**
+     * Check if a collision has been registered.
+     *
+     * @returns
+     *   True if a collision has happened, false otherwise.
+     */
+    bool has_collided() const
+    {
+        return has_collided_;
+    }
+
+  private:
+    /** Flag indicating if a collision has happened. */
+    bool has_collided_ = false;
 };
 
 /**
@@ -375,10 +420,37 @@ void entry()
     box_rigid_body.setFriction(1.0f);
     world.addRigidBody(&box_rigid_body);
 
+    // setup SDL for just audio
+    ::SDL_Init(SDL_INIT_AUDIO);
+    ::SDL_AudioSpec wavSpec;
+    std::uint32_t wavLength;
+    std::uint8_t *wavBuffer;
+
+    // load a crash sound
+    assert(::SDL_LoadWAV("assets/box-crash.wav", &wavSpec, &wavBuffer, &wavLength) != nullptr);
+    const auto deviceId = ::SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
+
     // add an update function which updates physics
-    ctx.set_update([&world] {
+    ctx.set_update([&] {
         world.stepSimulation(0.16);
         world.debugDrawWorld();
+
+        static auto single_collision = false;
+
+        // only handle collision once
+        if (!single_collision)
+        {
+            CollisionCallback callback{};
+            world.contactPairTest(&ground_rigid_body, &box_rigid_body, callback);
+
+            // if collision happens then play sound
+            if (callback.has_collided())
+            {
+                int success = ::SDL_QueueAudio(deviceId, wavBuffer, wavLength);
+                ::SDL_PauseAudioDevice(deviceId, 0);
+                single_collision = true;
+            }
+        }
     });
 
     // create and register our custom key listener
