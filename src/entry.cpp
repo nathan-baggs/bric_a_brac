@@ -19,6 +19,7 @@
 #include "LinearMath/btVector3.h"
 #include "Ogre.h"
 #include "OgreApplicationContext.h"
+#include "OgreSimpleRenderable.h"
 #include "SDL.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
@@ -379,6 +380,20 @@ void entry()
     point_light_node->attachObject(point_light);
     point_light_node->setPosition(::Ogre::Vector3(0, 150, 250));
 
+    // add a box
+
+    const auto material = ::Ogre::MaterialManager::getSingleton().create("MyMaterial", "bab");
+    const auto texture = ::Ogre::TextureManager::getSingleton().load("box.png", "bab");
+    auto *pass = material->getTechnique(0)->getPass(0);
+    auto *tex_unit = pass->createTextureUnitState();
+    tex_unit->setTextureName(texture->getName());
+
+    auto *box_entity = scene_manager->createEntity("cube.mesh");
+    box_entity->setMaterial(material);
+    auto *box_node = scene_manager->getRootSceneNode()->createChildSceneNode();
+    box_node->attachObject(box_entity);
+    box_node->setScale(0.2f, 0.2f, 0.2f);
+
     // setup bullet physics
 
     auto collision_config = ::btDefaultCollisionConfiguration{};
@@ -434,6 +449,12 @@ void entry()
     ctx.set_update([&] {
         world.stepSimulation(0.16);
         world.debugDrawWorld();
+
+        const auto physics_transform = box_rigid_body.getWorldTransform();
+        const auto origin = physics_transform.getOrigin();
+        const auto rotation = physics_transform.getRotation();
+        box_node->setPosition(origin.getX(), origin.getY(), origin.getZ());
+        box_node->setOrientation(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 
         static auto single_collision = false;
 
