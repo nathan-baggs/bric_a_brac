@@ -25,6 +25,14 @@ set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
 set(BUILD_BULLET2_DEMOS OFF CACHE BOOL "" FORCE)
 set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
 set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL_HRTF_DATA OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL_AMBDEC_PRESETS OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL_UTILS OFF CACHE BOOL "" FORCE)
+set(BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(LIBTYPE STATIC CACHE STRING "" FORCE)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(OGRE_BUILD_LIBS_AS_FRAMEWORKS FALSE CACHE BOOL "" FORCE)
@@ -43,7 +51,12 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/bulletphysics/bullet3
   GIT_TAG 3.25)
 
-FetchContent_MakeAvailable(ogre bullet)
+FetchContent_Declare(
+  sdl2
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL
+  GIT_TAG release-2.26.5)
+
+FetchContent_MakeAvailable(ogre bullet sdl2)
 
 add_subdirectory("src")
 add_subdirectory("samples")
