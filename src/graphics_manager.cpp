@@ -40,37 +40,6 @@ GraphicsManager::GraphicsManager()
     vp->setBackgroundColour(::Ogre::ColourValue{0.0, 0.0, 0.0});
     camera->setAspectRatio(::Ogre::Real(vp->getActualWidth()) / ::Ogre::Real(vp->getActualHeight()));
 
-    // create some lights
-
-    auto *spot_light = scene_manager_->createLight("spot_light");
-    spot_light->setDiffuseColour(0, 0, 1.0);
-    spot_light->setSpecularColour(0, 0, 1.0);
-    spot_light->setType(::Ogre::Light::LT_SPOTLIGHT);
-    spot_light->setSpotlightRange(::Ogre::Degree(35), ::Ogre::Degree(50));
-
-    auto *spot_light_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
-    spot_light_node->attachObject(spot_light);
-    spot_light_node->setDirection(-1, -1, 0);
-    spot_light_node->setPosition(::Ogre::Vector3(200, 200, 0));
-
-    auto *directional_light = scene_manager_->createLight("directional_light");
-    directional_light->setType(::Ogre::Light::LT_DIRECTIONAL);
-    directional_light->setDiffuseColour(::Ogre::ColourValue(0.4, 0, 0));
-    directional_light->setSpecularColour(::Ogre::ColourValue(0.4, 0, 0));
-
-    auto *directional_light_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
-    directional_light_node->attachObject(directional_light);
-    directional_light_node->setDirection(::Ogre::Vector3(0, -1, 1));
-
-    auto *point_light = scene_manager_->createLight("point_light");
-    point_light->setType(::Ogre::Light::LT_POINT);
-    point_light->setDiffuseColour(0.3, 0.3, 0.3);
-    point_light->setSpecularColour(0.3, 0.3, 0.3);
-
-    auto *point_light_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
-    point_light_node->attachObject(point_light);
-    point_light_node->setPosition(::Ogre::Vector3(0, 150, 250));
-
     addInputListener(this);
 }
 
@@ -144,6 +113,58 @@ void GraphicsManager::add_cube(const Vector3 &position, float scale, const std::
     auto *node = scene_manager_->getRootSceneNode()->createChildSceneNode();
     node->attachObject(entity);
     node->setScale(scale, scale, scale);
+    node->setPosition(position);
+}
+
+void GraphicsManager::add_spot_light(
+    const Vector3 &position,
+    const Vector3 &direction,
+    const Colour &colour,
+    const Degree &inner_angle,
+    const Degree &outer_angle)
+{
+    static auto counter = 0u;
+    std::string name = "spot_light" + std::to_string(counter++);
+
+    auto *spot_light = scene_manager_->createLight(name);
+    spot_light->setDiffuseColour(colour);
+    spot_light->setSpecularColour(colour);
+    spot_light->setType(::Ogre::Light::LT_SPOTLIGHT);
+    spot_light->setSpotlightRange(inner_angle, outer_angle);
+
+    auto *node = scene_manager_->getRootSceneNode()->createChildSceneNode();
+    node->attachObject(spot_light);
+    node->setDirection(direction);
+    node->setPosition(position);
+}
+
+void GraphicsManager::add_directional_light(const Vector3 &direction, const Colour &colour)
+{
+    static auto counter = 0u;
+    std::string name = "directional_light" + std::to_string(counter++);
+
+    auto *directional_light = scene_manager_->createLight(name);
+    directional_light->setType(::Ogre::Light::LT_DIRECTIONAL);
+    directional_light->setDiffuseColour(colour);
+    directional_light->setSpecularColour(colour);
+
+    auto *node = scene_manager_->getRootSceneNode()->createChildSceneNode();
+    node->attachObject(directional_light);
+    node->setDirection(direction);
+}
+
+void GraphicsManager::add_point_light(const Vector3 &position, const Colour &colour)
+{
+    static auto counter = 0u;
+    std::string name = "point_light" + std::to_string(counter++);
+
+    auto *point_light = scene_manager_->createLight(name);
+    point_light->setType(::Ogre::Light::LT_POINT);
+    point_light->setDiffuseColour(colour);
+    point_light->setSpecularColour(colour);
+
+    auto *node = scene_manager_->getRootSceneNode()->createChildSceneNode();
+    node->attachObject(point_light);
     node->setPosition(position);
 }
 

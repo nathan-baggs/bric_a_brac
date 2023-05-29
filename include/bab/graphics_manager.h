@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "colour.h"
+#include "degree.h"
 #include "quaternion.h"
 #include "vector3.h"
 
@@ -101,6 +103,53 @@ class GraphicsManager : private ::OgreBites::ApplicationContext, ::OgreBites::In
      *   The name of the material to add.
      */
     void add_cube(const Vector3 &position, float scale, const std::string &material_name);
+
+    /**
+     * Add a new spotlight to the scene.
+     *
+     * @param position
+     *   The position in world space of the light.
+     *
+     * @param direction
+     *   The direction the light is pointing.
+     *
+     * @param colour
+     *   Colour of the light.
+     *
+     * @param inner_angle
+     *   Angle of the inner cone of the light.
+     *
+     * @param outer_angle
+     *   Angle of the outer cone of the light.
+     */
+    void add_spot_light(
+        const Vector3 &position,
+        const Vector3 &direction,
+        const Colour &colour,
+        const Degree &inner_angle,
+        const Degree &outer_angle);
+
+    /**
+     * Add a new directional light to the scene.
+     *
+     * @param direction
+     *   The direction the light is pointing.
+     *
+     * @param colour
+     *   Colour of the light.
+     */
+    void add_directional_light(const Vector3 &direction, const Colour &colour);
+
+    /**
+     * Add a new point light to the scene.
+     *
+     * @param position
+     *   The position in world space of the light.
+     *
+     * @param colour
+     *   Colour of the light.
+     */
+    void add_point_light(const Vector3 &position, const Colour &colour);
 
     /**
      * Block and start the render loop.
