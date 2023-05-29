@@ -13,6 +13,8 @@ int main()
 {
     bab::GraphicsManager gm{};
 
+    gm.set_sky_dome("Examples/CloudySky", 5.0f, 8.0f);
+
     gm.add_mesh("ninja.mesh", bab::Vector3::ZERO, {bab::Radian{std::numbers::pi_v<float>}, bab::Vector3::UNIT_Y}, true);
     gm.add_plane(1500.0f, 1500.0f, 20u, 20u, false, "Examples/Rockwall");
 
