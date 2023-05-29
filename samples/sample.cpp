@@ -9,6 +9,7 @@
 #include "physics_manager.h"
 #include "quaternion.h"
 #include "radian.h"
+#include "scene_manager.h"
 #include "vector3.h"
 
 int main()
@@ -31,9 +32,11 @@ int main()
     bab::PhysicsManager pm{};
 
     pm.add_static_rigid_body({750.0f, 0.0f, 750.0f}, bab::Vector3::ZERO);
-    pm.add_dynamic_rigid_body({10.0f, 10.0f, 10.0f}, bab::Vector3::ZERO, 10.0f);
+    pm.add_dynamic_rigid_body({10.0f, 10.0f, 10.0f}, {10.0f, 100.0f, 10.0f}, 10.0f);
 
     gm.register_frame_start_callback([&pm] { pm.update(); });
+
+    bab::SceneManager sm{gm, pm};
 
     gm.start_rendering();
 
